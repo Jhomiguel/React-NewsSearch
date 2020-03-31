@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment, useState, useEffect } from "react";
+import Header from "./components/Header";
+import Formulario from "./components/Formulario";
+import ListaNoticias from "./components/ListaNoticias";
 
 function App() {
+  //guardar la categoria seleccionada
+  const [categoria, guardarCategoria] = useState("");
+  //guardar las noticias
+  const [noticias, guardarNoticias] = useState([]);
+
+  useEffect(() => {
+    const consultarAPI = async () => {
+      const apiKey = "30e762cfcfff4dbb92f33d9da4df90ad";
+      const url = `https://newsapi.org/v2/top-headlines?country=us&category=${categoria}&apiKey=${apiKey}`;
+      const respuesta = await fetch(url);
+      const noticias = await respuesta.json();
+      guardarNoticias(noticias.articles);
+    };
+    consultarAPI();
+  }, [categoria]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <Header titulo="Buscador de Noticias" />
+      <div className="container white">
+        <Formulario guardarCategoria={guardarCategoria} />
+        <ListaNoticias noticias={noticias} />
+      </div>
+    </Fragment>
   );
 }
 
